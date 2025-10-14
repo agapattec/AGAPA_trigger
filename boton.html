@@ -1,1 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Automatización SSAA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
 
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 30px;
+      margin: 10px;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    .form-section {
+      margin: 10px 0;
+      display: none;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+
+    label {
+      margin-right: 10px;
+    }
+
+    select, input {
+      margin-bottom: 10px;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 16px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Automatización SSAA</h1>
+
+  <button id="btnFichajes">Obtener fichajes</button>
+  <button id="btnInforme">Obtener informe de seguimiento</button>
+
+  <!-- Formulario fichajes -->
+  <div class="form-section" id="formFichajes">
+    <h3>Opciones Fichajes</h3>
+    <label>Año:</label>
+    <select id="anoFichajes"></select><br>
+    <label>Mes:</label>
+    <select id="mesFichajes">
+      <option>Enero</option><option>Febrero</option><option>Marzo</option>
+      <option>Abril</option><option>Mayo</option><option>Junio</option>
+      <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+      <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+    </select><br>
+    <label>Fase:</label>
+    <select id="faseFichajes"></select><br>
+    <button id="enviarFichajes">Ejecutar Fichajes</button>
+  </div>
+
+  <!-- Formulario informe -->
+  <div class="form-section" id="formInforme">
+    <h3>Opciones Informe</h3>
+    <label>Año:</label>
+    <select id="anoInforme"></select><br>
+    <label>Mes:</label>
+    <select id="mesInforme">
+      <option>Enero</option><option>Febrero</option><option>Marzo</option>
+      <option>Abril</option><option>Mayo</option><option>Junio</option>
+      <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+      <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+    </select><br>
+    <label>Periodo:</label>
+    <select id="periodoInforme">
+      <option>1 al 30</option>
+      <option>1 al 31</option>
+    </select><br>
+    <label>Certi:</label>
+    <input type="text" id="certiInforme" placeholder="Ingrese número de certificado"><br>
+    <button id="enviarInforme">Ejecutar Informe</button>
+  </div>
+
+  <div id="message"></div>
+
+  <script>
+    const message = document.getElementById('message');
+
+    // Mostrar/ocultar formularios
+    document.getElementById('btnFichajes').addEventListener('click', () => {
+      document.getElementById('formFichajes').style.display = 'block';
+      document.getElementById('formInforme').style.display = 'none';
+    });
+    document.getElementById('btnInforme').addEventListener('click', () => {
+      document.getElementById('formInforme').style.display = 'block';
+      document.getElementById('formFichajes').style.display = 'none';
+    });
+
+    // Generar años dinámicamente hasta 2028
+    const years = [];
+    for(let y = 2024; y <= 2028; y++) years.push(y);
+    const anoFichajes = document.getElementById('anoFichajes');
+    const anoInforme = document.getElementById('anoInforme');
+    years.forEach(y => {
+      anoFichajes.appendChild(new Option(y, y));
+      anoInforme.appendChild(new Option(y, y));
+    });
+
+    // Fases (1–12, usando año como ejemplo)
+    const faseFichajes = document.getElementById('faseFichajes');
+    for(let f=1; f<=12; f++) faseFichajes.appendChild(new Option(f,f));
+
+    // Función para enviar POST a Netlify
+    async function enviarWorkflow(payload){
+      try {
+        const res = await fetch('/.netlify/functions/triggerWorkflow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if(res.ok) message.textContent = "Workflow activado correctamente.";
+        else {
+          const text = await res.text();
+          message.textContent = "Error al activar workflow: " + text;
+        }
+      } catch(e){
+        message.textContent = "Error de conexión: " + e.message;
+      }
+    }
+
+    // Eventos enviar
+    document.getElementById('enviarFichajes').addEventListener('click', () => {
+      const payload = {
+        script: "Parte_horas_v9",
+        ano: anoFichajes.value,
+        mes: document.getElementById('mesFichajes').value,
+        fase: faseFichajes.value
+      };
+      enviarWorkflow(payload);
+    });
+
+    document.getElementById('enviarInforme').addEventListener('click', () => {
+      const payload = {
+        script: "AGAPA_SEG",
+        Anio: anoInforme.value,
+        Mes: document.getElementById('mesInforme').value,
+        Periodo: document.getElementById('periodoInforme').value,
+        Certi: document.getElementById('certiInforme').value
+      };
+      enviarWorkflow(payload);
+    });
+  </script>
+</body>
+</html>
