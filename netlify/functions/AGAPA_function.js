@@ -32,6 +32,12 @@ exports.handler = async function(event, context) {
       inputs: data  // Se pasan todos los campos del formulario como inputs del workflow
     };
 
+    console.log("---- INICIO DISPATCH ----");
+    console.log("URL:", url);
+    console.log("Token presente:", !!token);
+    console.log("Payload:", JSON.stringify(bodyPayload, null, 2));
+    console.log("--------------------------");
+
     // Usamos fetch nativo (sin node-fetch)
     const res = await fetch(url, {
       method: "POST",
@@ -49,8 +55,11 @@ exports.handler = async function(event, context) {
     }
 
     return { statusCode: 200, body: "Workflow activado correctamente." };
-
+  
   } catch (err) {
-    return { statusCode: 500, body: "Error al activar workflow: " + err.message };
+    console.error("Error detallado:", err);
+    return { 
+      statusCode: 500, 
+      body: "Error al activar workflow: " + (err.message || JSON.stringify(err)) 
+    };
   }
-};
