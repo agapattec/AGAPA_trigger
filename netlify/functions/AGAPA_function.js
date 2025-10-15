@@ -63,3 +63,4 @@ exports.handler = async function(event, context) {
       body: "Error al activar workflow: " + (err.message || JSON.stringify(err)) 
     };
   }
+};
