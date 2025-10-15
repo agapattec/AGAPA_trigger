@@ -24,7 +24,7 @@ exports.handler = async function(event, context) {
     }
 
     // Corrige esta línea: aquí va el usuario/organización y el nombre del repo privado
-    const url = `https://api.github.com/repos/agapattec//actions/workflows/${workflow_id}/dispatches`;
+    const url = `https://api.github.com/repos/agapattec/AGAPA_auto/actions/workflows/${workflow_id}/dispatches`;
 
     // Cuerpo de la petición
     const bodyPayload = {
