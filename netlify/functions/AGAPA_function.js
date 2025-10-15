@@ -9,10 +9,23 @@ exports.handler = async function(event, context) {
 
     // Determinar workflow según script
     let workflow_id;
+    let inputs= {};
+    
     if (data.script === "Parte_horas_v9") {
-      workflow_id = "Parte_horas_v9.yml"; // nombre exacto del YML en el repo privado
+      workflow_id = "Parte_horas_v9.yml"; // workflow de Fichajes
+      inputs = {
+        ano: data.ano,
+        mes: data.mes,
+        fase: data.fase
+      };
     } else if (data.script === "AGAPA_SEG") {
-      workflow_id = "AGAPA_SEG.yml";
+      workflow_id = "AGAPA_SEG.yml"; // workflow de SEG
+      inputs = {
+        ano: data.ano,
+        mes: data.mes,
+        periodo: data.periodo,
+        certi: data.certi
+      };
     } else {
       return { statusCode: 400, body: "Script desconocido" };
     }
@@ -23,13 +36,12 @@ exports.handler = async function(event, context) {
       return { statusCode: 500, body: "No se encontró token de GitHub en Netlify" };
     }
 
-    // Corrige esta línea: aquí va el usuario/organización y el nombre del repo privado
     const url = `https://api.github.com/repos/agapattec/AGAPA_auto/actions/workflows/${workflow_id}/dispatches`;
 
-    // Cuerpo de la petición
+    // Payload
     const bodyPayload = {
-      ref: "main", // Rama donde está el YML
-      inputs: data  // Se pasan todos los campos del formulario como inputs del workflow
+      ref: "main",
+      inputs: inputs
     };
 
     console.log("---- INICIO DISPATCH ----");
