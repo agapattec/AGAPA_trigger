@@ -1,6 +1,4 @@
 
-const fetch = require("node-fetch");
-
 exports.handler = async function(event, context) {
   try {
     if (event.httpMethod !== "POST") {
@@ -12,26 +10,29 @@ exports.handler = async function(event, context) {
     // Determinar workflow según script
     let workflow_id;
     if (data.script === "Parte_horas_v9") {
-      workflow_id = "Parte_horas_v9.yml"; // nombre exacto del YML en repo privado
+      workflow_id = "Parte_horas_v9.yml"; // nombre exacto del YML en el repo privado
     } else if (data.script === "AGAPA_SEG") {
       workflow_id = "AGAPA_SEG.yml";
     } else {
       return { statusCode: 400, body: "Script desconocido" };
     }
 
-    // Token secreto de Netlify
+    // Token secreto de Netlify (variable de entorno PRIV_TOKEN)
     const token = process.env.PRIV_TOKEN;
-    if (!token) return { statusCode: 500, body: "No se encontró token de GitHub en Netlify" };
+    if (!token) {
+      return { statusCode: 500, body: "No se encontró token de GitHub en Netlify" };
+    }
 
-    // URL para dispatch del workflow
-    const url = `https://api.github.com/repos/TU_ORG/TU_REPO_PRIVATE/actions/workflows/${workflow_id}/dispatches`;
+    // Corrige esta línea: aquí va el usuario/organización y el nombre del repo privado
+    const url = `https://api.github.com/repos/agapattec//actions/workflows/${workflow_id}/dispatches`;
 
-    // Mapear variables del payload al ref y inputs del workflow
+    // Cuerpo de la petición
     const bodyPayload = {
-      ref: "main", // rama donde está el YML
-      inputs: data // todos los campos del JSON se pasan como inputs
+      ref: "main", // Rama donde está el YML
+      inputs: data  // Se pasan todos los campos del formulario como inputs del workflow
     };
 
+    // Usamos fetch nativo (sin node-fetch)
     const res = await fetch(url, {
       method: "POST",
       headers: {
