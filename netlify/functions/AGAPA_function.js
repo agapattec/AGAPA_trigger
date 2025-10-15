@@ -21,10 +21,10 @@ exports.handler = async function(event, context) {
     } else if (data.script === "AGAPA_SEG") {
       workflow_id = "AGAPA_SEG.yml"; // workflow de SEG
       inputs = {
-        ano: data.ano,
-        mes: data.mes,
-        periodo: data.periodo,
-        certi: data.certi
+        ano: data.Anio,
+        mes: data.Mes,
+        periodo: data.Periodo,
+        certi: data.Certi
       };
     } else {
       return { statusCode: 400, body: "Script desconocido" };
