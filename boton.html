@@ -138,7 +138,7 @@
     // Función para enviar POST a Netlify
     async function enviarWorkflow(payload){
       try {
-        const res = await fetch('/.netlify/functions/triggerWorkflow', {
+        const res = await fetch('/.netlify/functions/AGAPA_function', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
