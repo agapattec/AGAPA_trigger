@@ -115,10 +115,12 @@
     document.getElementById('btnFichajes').addEventListener('click', () => {
       document.getElementById('formFichajes').style.display = 'block';
       document.getElementById('formInforme').style.display = 'none';
+      message.textContent = '';
     });
     document.getElementById('btnInforme').addEventListener('click', () => {
       document.getElementById('formInforme').style.display = 'block';
       document.getElementById('formFichajes').style.display = 'none';
+      message.textContent = '';
     });
 
     // Generar años dinámicamente hasta 2028
@@ -155,6 +157,7 @@
 
     // Eventos enviar
     document.getElementById('enviarFichajes').addEventListener('click', () => {
+      message.textContent = '';
       const payload = {
         script: "Parte_horas_v9",
         ano: anoFichajes.value,
@@ -165,6 +168,7 @@
     });
 
     document.getElementById('enviarInforme').addEventListener('click', () => {
+      message.textContent = '';
       const payload = {
         script: "AGAPA_SEG",
         Anio: anoInforme.value,
